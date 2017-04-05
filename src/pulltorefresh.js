@@ -18,6 +18,7 @@ const _defaults = {
   bodyOffset: 20,
   mainElement: 'body',
   triggerElement: 'body',
+  scrollingElement: false,
   ptrElement: '.ptr',
   classPrefix: 'ptr--',
   cssProp: 'min-height',
@@ -90,8 +91,13 @@ function _setupEvents() {
   function _onTouchStart(e) {
     const { triggerElement } = _SETTINGS;
 
-    if (!window.scrollY) {
-      pullStartY = e.touches[0].screenY;
+    if (_SETTINGS.scrollingElement) {
+      if (!_SETTINGS.scrollingElement.scrollTop) {
+        pullStartY = e.touches[0].screenY;
+console.log("[PTR] touch setting pullStartY (1): " + pullStartY);
+    } else if (!window.scrollY) {
+        pullStartY = e.touches[0].screenY;
+console.log("[PTR] touch setting pullStartY (2): " + pullStartY);
     }
 
     if (_state !== 'pending') {
@@ -111,7 +117,11 @@ function _setupEvents() {
     } = _SETTINGS;
 
     if (!pullStartY) {
-      if (!window.scrollY) {
+      if (_SETTINGS.scrollingElement) {
+        if (!_SETTINGS.scrollingElement.scrollTop) {
+          pullStartY = e.touches[0].screenY;
+        }
+      } else if (!window.scrollY) {
         pullStartY = e.touches[0].screenY;
       }
     } else {
@@ -267,6 +277,10 @@ export default {
 
     if (typeof _SETTINGS.triggerElement === 'string') {
       _SETTINGS.triggerElement = document.querySelector(_SETTINGS.triggerElement);
+    }
+
+    if (typeof _SETTINGS.scrollingElement === 'string') {
+      _SETTINGS.scrollingElement = document.querySelector(_SETTINGS.scrollingElement);
     }
 
     if (!_setup) {
